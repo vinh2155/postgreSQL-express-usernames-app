@@ -1,23 +1,34 @@
 const { getAllUsernames, searchUsernames, insertUsername, deleteAllUsernames } = require('../db/queries');
 
+//Ici, on fait des fonctions avec les queries au db pour render une page.
+//Here, getUsernames is a controller (have the logic and receives req and res objects)
+
 const getUsernames = async (req, res) => {
     try {
         const searchTerm = req.query.search;
-        let usernames;
+        let usernames; 
         
         if (searchTerm) {
-            usernames = await searchUsernames(searchTerm);
+            usernames = await searchUsernames(searchTerm); //when we return the rows, it's now usernames
             console.log(`Search results for "${searchTerm}":`, usernames);
         } else {
             usernames = await getAllUsernames();
             console.log("All usernames:", usernames);
         }
         
-        const usernameList = usernames.map(user => user.username).join(', ');
+        const usernameList = usernames.map(user => user.username).join(', '); 
+//   what usernames contain: usernames = [
+//   { id: 1, username: 'alice' },
+//   { id: 2, username: 'bob' },
+//   { id: 3, username: 'charlie' }]
+// Result: ['alice', 'bob', 'charlie']
+// After .join(', '): 'alice, bob, charlie'
+
         const message = searchTerm 
             ? `Search results for "${searchTerm}": ${usernameList || 'No results found'}`
             : `All usernames: ${usernameList || 'No usernames found'}`;
-            
+            //We did not search anything: get all usernames and if there's nothing: "No usernames found"
+            //We did search something: get the list and if there's nothing: No results found
         res.send(`
             <!DOCTYPE html>
             <html lang="en">
